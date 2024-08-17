@@ -1,6 +1,7 @@
 package com.wallsistem.clientes.controller;
 
 import com.wallsistem.clientes.dto.ClienteDTO;
+import com.wallsistem.clientes.repository.ClienteRepository;
 import com.wallsistem.clientes.service.ClienteService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,12 @@ import java.util.List;
 @RequestMapping("/clientes")
 public class ClienteController {
 
+    private final ClienteRepository clienteRepository;
     ClienteService clienteService;
 
-    public ClienteController(ClienteService clienteService) {
+    public ClienteController(ClienteService clienteService, ClienteRepository clienteRepository) {
         this.clienteService = clienteService;
+        this.clienteRepository = clienteRepository;
     }
 
     @GetMapping
@@ -34,4 +37,9 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteDTO);
     }
 
+    @GetMapping("/{cpf}")
+    public ResponseEntity<ClienteDTO> buscarClientePorCPF(@PathVariable String cpf){
+        ClienteDTO cliente = clienteService.buscarClientesPorCPF(cpf).toDTO();
+        return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    }
 }

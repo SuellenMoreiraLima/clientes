@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ClienteService {
 
@@ -22,14 +24,22 @@ public class ClienteService {
     public Page<ClienteDTO> listarTodosCliente(int page, int size){
         Pageable pageable = PageRequest.of(page, size, Sort.by("nome").descending());
          Page<Cliente> clientes = clienteRepository.findAll(pageable);
-//                .map(cliente -> new ClienteDTO());
         Page<ClienteDTO> clienteDTOs = clientes.map(cliente -> cliente.toDTO());
         return clienteDTOs;
     }
-//    public Cliente listarCLientesPorCPF(){
-//
-//    }
-//
+    public Cliente buscarClientesPorCPF(String cpf){
+
+        String cpfLimpo = cpf.replaceAll("[^0-9]", "");
+
+        Optional<Cliente> cliente = clienteRepository.findByCpf(cpfLimpo);
+
+        if (cliente.isPresent()) {
+            return cliente.get().toDTO().toEntity();
+        } else {
+            throw new RuntimeException("Cliente não encontrado com CPF: " + cpf); //
+        }
+    }
+
     public ClienteDTO criarNovoClienteValidandoCampos(ClienteDTO clienteDTO){
         String limparCpf = clienteDTO.getCpf().replaceAll("[^0-9]", "");
         if (clienteRepository.existsByCpf(clienteDTO.getCpf())){
