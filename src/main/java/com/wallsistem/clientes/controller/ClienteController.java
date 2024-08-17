@@ -42,4 +42,10 @@ public class ClienteController {
         ClienteDTO cliente = clienteService.buscarClientesPorCPF(cpf).toDTO();
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ClienteDTO> deletarClientes(@PathVariable Long id){
+        clienteService.deletarClientes(id);
+        return ResponseEntity.noContent().build();
+    }
 }
