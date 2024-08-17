@@ -37,9 +37,8 @@ public class Cliente {
     @NotNull
     private Sexo sexo;
 
-    public ClienteDTO todto(){
-        ModelMapper model = new ModelMapper();
-        return model.map(this, ClienteDTO.class);
+    public ClienteDTO toDTO(){
+        ModelMapper mapper = new ModelMapper();
+        return mapper.map(this, ClienteDTO.class);
     }
-
 }
