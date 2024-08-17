@@ -52,9 +52,22 @@ public class ClienteService {
         return cliente.toDTO();
     }
 
-//
-//    public Cliente atualizarClientes(){}
-//
+    public ClienteDTO atualizarClientes(Long id, ClienteDTO clienteDTO){
+        Optional<Cliente> cliente = clienteRepository.findById(id);
+        if (cliente.isPresent()) {
+            Cliente clienteAtualizar = cliente.get();
+
+            clienteAtualizar.setNome(clienteDTO.getNome());
+            clienteAtualizar.setCpf(clienteDTO.getCpf());
+            clienteAtualizar.setDataNascimento(clienteDTO.getDataNascimento());
+            clienteAtualizar.setSexo(clienteDTO.getSexo());
+            return clienteRepository.save(clienteAtualizar).toDTO();
+
+        }else {
+            throw new RuntimeException("Cliente com ID " + clienteDTO.getId() + "Não encontrado");
+        }
+    }
+
     public void deletarClientes(Long id){
         if (clienteRepository.existsById(id)){
             clienteRepository.deleteById(id);

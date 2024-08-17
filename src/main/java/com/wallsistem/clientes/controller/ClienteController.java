@@ -43,6 +43,12 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteDTO> buscarClientePorCPF(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO){
+        ClienteDTO cliente = clienteService.atualizarClientes(id, clienteDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ClienteDTO> deletarClientes(@PathVariable Long id){
         clienteService.deletarClientes(id);
