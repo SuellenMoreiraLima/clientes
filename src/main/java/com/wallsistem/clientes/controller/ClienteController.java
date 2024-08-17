@@ -3,13 +3,11 @@ package com.wallsistem.clientes.controller;
 import com.wallsistem.clientes.dto.ClienteDTO;
 import com.wallsistem.clientes.repository.ClienteRepository;
 import com.wallsistem.clientes.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.print.Pageable;
-import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -32,7 +30,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> salvarCliente(@RequestBody ClienteDTO clienteDTO){
+    public ResponseEntity<ClienteDTO> salvarCliente(@Valid @RequestBody ClienteDTO clienteDTO){
         ClienteDTO cliente = clienteService.criarNovoClienteValidandoCampos(clienteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteDTO);
     }
@@ -44,7 +42,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> buscarClientePorCPF(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO){
+    public ResponseEntity<ClienteDTO> atualizarClientes(@PathVariable Long id,@Valid @RequestBody ClienteDTO clienteDTO){
         ClienteDTO cliente = clienteService.atualizarClientes(id, clienteDTO);
         return ResponseEntity.status(HttpStatus.OK).body(cliente);
     }

@@ -3,6 +3,7 @@ package com.wallsistem.clientes.model;
 import com.wallsistem.clientes.dto.ClienteDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,15 +24,20 @@ public class Cliente {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
     private Long id;
-    @NotNull
-    @Size(max = 40)
+    @NotNull(message = "Nome é obrigatório")
+    @Size(max = 40,  message = "Nome deve ter no máximo 40 caracteres")
     private String nome;
-    @NotNull
+
+    @NotNull(message = "Data de nascimento é obrigatória")
+    @Past(message = "Data de nascimento deve ser no passado")
     private LocalDate dataNascimento;
+
     @NotNull
     @CPF
+    @Size(min = 11, max = 11, message = "CPF deve ter 11 dígitos")
     private String cpf;
-    @NotNull
+
+    @NotNull(message = "Sexo é obrigatório")
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
 
