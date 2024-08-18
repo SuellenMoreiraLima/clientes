@@ -1,6 +1,8 @@
 package com.wallsistem.clientes.service;
 
 import com.wallsistem.clientes.dto.ClienteDTO;
+import com.wallsistem.clientes.handler.ConflictException;
+import com.wallsistem.clientes.handler.NoContentException;
 import com.wallsistem.clientes.model.Cliente;
 import com.wallsistem.clientes.repository.ClienteRepository;
 import org.springframework.data.domain.Page;
@@ -28,23 +30,17 @@ public class ClienteService {
         return clienteDTOs;
     }
     public Cliente buscarClientesPorCPF(String cpf){
-
         String cpfLimpo = cpf.replaceAll("[^0-9]", "");
 
-        Optional<Cliente> cliente = clienteRepository.findByCpf(cpfLimpo);
-
-        if (cliente.isPresent()) {
-            return cliente.get().toDTO().toEntity();
-        } else {
-            throw new RuntimeException("Cliente não encontrado com CPF: " + cpf); //
+        return clienteRepository.findByCpf(cpfLimpo)
+                .orElseThrow(() -> new NoContentException());
         }
-    }
+
 
     public ClienteDTO criarNovoClienteValidandoCampos(ClienteDTO clienteDTO){
         String limparCpf = clienteDTO.getCpf().replaceAll("[^0-9]", "");
         if (clienteRepository.existsByCpf(clienteDTO.getCpf())){
-            throw new IllegalArgumentException("CPF já cadastrado.");
-
+            throw new ConflictException("CPF já cadastrado.");
         }
         Cliente cliente = clienteDTO.toEntity();
         cliente.setCpf(limparCpf);
@@ -64,7 +60,7 @@ public class ClienteService {
             return clienteRepository.save(clienteAtualizar).toDTO();
 
         }else {
-            throw new RuntimeException("Cliente com ID " + clienteDTO.getId() + "Não encontrado");
+            throw new ConflictException("Cliente com ID " + clienteDTO.getId() + "Não encontrado");
         }
     }
 
@@ -72,7 +68,7 @@ public class ClienteService {
         if (clienteRepository.existsById(id)){
             clienteRepository.deleteById(id);
         }else {
-            throw new RuntimeException("Cliente não encontrado!");
+            throw new ConflictException("Cliente não encontrado!");
         }
 
     }

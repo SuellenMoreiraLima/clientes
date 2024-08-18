@@ -23,22 +23,25 @@ public class ClienteController {
 
     @GetMapping
     public Page<ClienteDTO> listarTodosClientes(
-            @RequestParam(defaultValue =   "0") int page,
-            @RequestParam(defaultValue =  "5") int size
-    ){
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
         return clienteService.listarTodosCliente(page, size);
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> salvarCliente(@Valid @RequestBody ClienteDTO clienteDTO){
-        ClienteDTO cliente = clienteService.criarNovoClienteValidandoCampos(clienteDTO);
+    public ResponseEntity<ClienteDTO> salvarCliente(@Valid @RequestBody ClienteDTO clienteDTO) {
+            ClienteDTO cliente = clienteService.criarNovoClienteValidandoCampos(clienteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteDTO);
     }
 
     @GetMapping("/{cpf}")
-    public ResponseEntity<ClienteDTO> buscarClientePorCPF(@PathVariable String cpf){
-        ClienteDTO cliente = clienteService.buscarClientesPorCPF(cpf).toDTO();
-        return ResponseEntity.status(HttpStatus.OK).body(cliente);
+    public ResponseEntity<ClienteDTO> buscarClientePorCPF(@PathVariable String cpf) {
+        clienteRepository.existsByCpf(cpf);
+
+                ClienteDTO cliente = clienteService.buscarClientesPorCPF(cpf).toDTO();
+                return ResponseEntity.status(HttpStatus.OK).body(cliente);
+
     }
 
     @PutMapping("/{id}")
