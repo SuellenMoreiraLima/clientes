@@ -2,6 +2,7 @@ package com.wallsistem.clientes.service;
 
 import com.wallsistem.clientes.dto.ClienteDTO;
 import com.wallsistem.clientes.handler.ConflictException;
+import com.wallsistem.clientes.handler.NotFoundClientesFoundException;
 import com.wallsistem.clientes.handler.NoContentException;
 import com.wallsistem.clientes.model.Cliente;
 import com.wallsistem.clientes.repository.ClienteRepository;
@@ -23,12 +24,17 @@ public class ClienteService {
         this.clienteRepository = clienteRepository;
     }
 
-    public Page<ClienteDTO> listarTodosCliente(int page, int size){
+    public Page<ClienteDTO> listarTodosCliente(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("nome").descending());
-         Page<Cliente> clientes = clienteRepository.findAll(pageable);
-        Page<ClienteDTO> clienteDTOs = clientes.map(cliente -> cliente.toDTO());
-        return clienteDTOs;
+        Page<Cliente> clientes = clienteRepository.findAll(pageable);
+
+        if (clientes.isEmpty()) {
+            throw new NotFoundClientesFoundException("Não tem clientes cadastrados.");
+        }
+
+        return clientes.map(cliente -> cliente.toDTO());
     }
+
     public Cliente buscarClientesPorCPF(String cpf){
         String cpfLimpo = cpf.replaceAll("[^0-9]", "");
 
@@ -36,12 +42,15 @@ public class ClienteService {
                 .orElseThrow(() -> new NoContentException());
         }
 
-
     public ClienteDTO criarNovoClienteValidandoCampos(ClienteDTO clienteDTO){
         String limparCpf = clienteDTO.getCpf().replaceAll("[^0-9]", "");
         if (clienteRepository.existsByCpf(clienteDTO.getCpf())){
             throw new ConflictException("CPF já cadastrado.");
         }
+        if (clienteDTO.getId() != null && clienteRepository.existsById(clienteDTO.getId())) {
+            throw new ConflictException("ID já cadastrado.");
+        }
+
         Cliente cliente = clienteDTO.toEntity();
         cliente.setCpf(limparCpf);
         clienteRepository.save(cliente);
@@ -60,7 +69,7 @@ public class ClienteService {
             return clienteRepository.save(clienteAtualizar).toDTO();
 
         }else {
-            throw new ConflictException("Cliente com ID " + clienteDTO.getId() + "Não encontrado");
+            throw new NoContentException();
         }
     }
 
@@ -68,7 +77,7 @@ public class ClienteService {
         if (clienteRepository.existsById(id)){
             clienteRepository.deleteById(id);
         }else {
-            throw new ConflictException("Cliente não encontrado!");
+            throw new ConflictException("Cliente com o id:" + id + "não encontrado!");
         }
 
     }

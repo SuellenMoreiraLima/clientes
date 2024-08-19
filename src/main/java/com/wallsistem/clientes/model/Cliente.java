@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 import org.modelmapper.ModelMapper;
-import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
 
